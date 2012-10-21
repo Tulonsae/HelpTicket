@@ -1,0 +1,59 @@
+name: HelpTicket
+version: 0.3
+author: roundar
+
+main: com.github.roundar.helpticket.HelpTicket
+database: false
+
+
+commands:
+  ticket:
+    description: Open new Help Ticket.
+    usage: /ticket <message>
+    permission: HelpTicket.open
+    permission-message: You don't have permission to open new tickets.
+  readticket:
+    description: Read the next open ticket.
+    usage: /readticket
+    permission: HelpTicket.admin
+    permission-message: You do not have permission to manage tickets.
+  passticket:
+    description: Send ticket to the back of the queue.
+    usage: /passticket
+    permission: HelpTicket.admin
+    permission-message: You do not have permission to manage tickets.
+  closeticket:
+    description: Close the next open ticket.
+    usage: /closeticket
+    permission: HelpTicket.admin
+    permission-message: You do not have permission to manage tickets.
+  ticketcount:
+    description: Retrieve the number of open tickets.
+    usage: /ticketcount
+    permission: HelpTicket.admin
+    permission-message: You do not have permission to manage tickets.
+  HelpTicketBlock:
+    description: Block a user from opening new tickets.
+    usage: /HelpTicketBlock <ExactPlayerName>
+    permission: HelpTicket.admin
+    permission-message: You do not have permission to manage tickets.
+  HelpTicketUnblock:
+    description: Unblock a user from opening new tickets.
+    usage: /HelpTicketUnblock <ExactPlayerName>
+    permission: HelpTicket.admin
+    permission-message: You do not have permission manage tickets.
+    
+permissions:
+  HelpTicket.*:
+    description: Allows full management of tickets.
+    children:
+      HelpTicket.open: true
+      HelpTicket.admin: true
+  HelpTicket.open:
+    description: Grants permission to open tickets.
+    default: true
+  HelpTicket.admin:
+    description: Grants permission to manage tickets.
+    default: op
+    children:
+      HelpTicket.open: true
