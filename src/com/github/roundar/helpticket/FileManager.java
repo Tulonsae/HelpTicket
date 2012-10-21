@@ -1,197 +1,65 @@
 package com.github.roundar.helpticket;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.ParseException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Scanner;
-import java.util.logging.Level;
-
+import java.util.List;
 
 public class FileManager {
 	
-	HelpTicket helpTicket;
-	
-	private File openTickets, archive;
+	private final ConfigAccessor openTickets, closedTickets;
 	
 	public FileManager(HelpTicket helpTicket) {
-
-		this.helpTicket = helpTicket;
 		
-		generateFiles();
+		openTickets = new ConfigAccessor(helpTicket, "openTickets.yml" );
+		closedTickets = new ConfigAccessor(helpTicket, "closedTickets.yml" );
+	}
 		
+	
+	public int getLastUsedId(){	
+		return openTickets.getConfig().getInt("id"); 
+	}	
+	
+	
+	public void saveTicket(Ticket ticket, boolean open){		
+		ConfigAccessor file = open ? openTickets : closedTickets;
+		
+		List<String> tickets = file.getConfig().getStringList("tickets");
+		tickets.add( ticket.toString() );
+		
+		file.getConfig().set("id", ticket.id() );
+		file.getConfig().set("tickets", tickets );
+		
+		file.saveConfig();
 	}
 	
-	public short getLastClosedId(){
-		
-		Scanner scanner;
-		Short id = 0;
-		
-		try{			
-			scanner = new Scanner(archive);			
-		} catch (FileNotFoundException FNFE) {			
-			helpTicket.getLogger().log(Level.SEVERE, "Unable to find archive.txt", FNFE );
-			return 0;
-		}
-		
-		scanner.useDelimiter(",");
-		
-		while(scanner.hasNextLine())
-			if(scanner.hasNextShort()) {				
-				id = scanner.nextShort();
-				scanner.nextLine();
-				helpTicket.getLogger().info(id.toString());
-			}
-		
-		scanner.close();
-		
-		return id;
-		
-	}
 	
-	public void archiveTicket(Ticket ticket) {
+	public LinkedList<Ticket> loadOpenTickets() {
+		//pull open tickets while also trimming closed tickets from openTickets.yml
 		
-		try{
-			
-			BufferedWriter writer = new BufferedWriter(new FileWriter(archive, true));
-			writer.write( ticket.toString() );
-			writer.newLine();
-			writer.flush();
-			writer.close();
-			
-		} catch (IOException IOE) {
-			
-			helpTicket.getLogger().log(Level.WARNING, "Error adding ticket \"" + ticket + "\" to archive.txt", IOE );
-			
-		}
-		
-	}
-	
-	public void appendOpenTicket(Ticket ticket) {
-		
-		try{
-			
-			BufferedWriter writer = new BufferedWriter(new FileWriter(openTickets, true));
-			writer.write( ticket.toString() );
-			writer.newLine();
-			writer.flush();
-			writer.close();
-			
-		} catch (IOException IOE) {			
-			//Severe exception. If open tickets are not saved they will be lost on shutdown
-			helpTicket.getLogger().log(Level.SEVERE, "Error saving ticket \"" + ticket.toString() + "\" to archive.txt", IOE );
-			
-		}
-		
-	}
-	
-	public LinkedList<Ticket> getOpenTickets(){
+		List<String> list = openTickets.getConfig().getStringList("tickets");
 		
 		LinkedList<Ticket> tickets = new LinkedList<Ticket>();
 		
-		Ticket ticket = null;
-		
-		short currentId = getLastClosedId();
-
-		Scanner scanner;
-			
-		try {
-			scanner = new Scanner(openTickets);
-		} catch (FileNotFoundException FNFE) {
-			helpTicket.getLogger().log(Level.SEVERE, "Unable to find openTickets file.", FNFE );
+		if(list.isEmpty())
 			return tickets;
+		
+		int lastClosedId = closedTickets.getConfig().getInt("id");
+		
+		Ticket ticket;
+		
+		for(int i=0; i<list.size(); i++) {
+			
+			ticket = new Ticket( list.get(i) );
+			
+			if(ticket.id() > lastClosedId)
+				tickets.add( ticket );
+			else
+				list.remove(i);
 		}
 		
-		while(scanner.hasNextLine())
-			try {
-				ticket = new Ticket( scanner.nextLine() );
-				
-				if( ticket.id() >= currentId ){
-					tickets.add( ticket );
-					helpTicket.getLogger().info(ticket.toString());
-				}
-				
-			} catch (ParseException PE) {
-				
-				helpTicket.getLogger().log(Level.SEVERE, "Error parsing ticket \"" + ticket.toString() + "\"", PE );
-				
-			}
-		
-		scanner.close();
-
-		openTickets.delete();
-		generateFiles();
-		
-		Iterator<Ticket> iterator = tickets.iterator();
-		
-		try {
-			
-			BufferedWriter writer = new BufferedWriter( new FileWriter(openTickets, true) );
-		
-			while(iterator.hasNext()){
-				writer.write( iterator.next().toString() );
-				writer.newLine();
-			}
-			
-			writer.flush();
-			writer.close();
-			
-		} catch (IOException IOE) {
-			
-			helpTicket.getLogger().log(Level.SEVERE, "Error flushing open tickets.", IOE );
-			
-		}
+		openTickets.getConfig().set("tickets", list );
+		openTickets.saveConfig();
 		
 		return tickets;
-		
 	}
-	
-	private void generateFiles(){
-		
-		try{
-			
-			helpTicket.getDataFolder().mkdirs();
-		
-			openTickets = new File(helpTicket.getDataFolder(), "openTickets.txt");
-			archive = new File(helpTicket.getDataFolder(), "archive.txt");
-			
-			openTickets.createNewFile();
-			archive.createNewFile();
-			
-		} catch (IOException IOE) {
-			
-			helpTicket.getLogger().log(Level.SEVERE, "Error creating necessary files.", IOE );
-			
-			if( !( openTickets.exists() && archive.exists() ) ) {
-				
-				helpTicket.getLogger().log(Level.SEVERE, "Necessary files could not be created.  Disabling HelpTicket.");
-				
-				helpTicket.getServer().getPluginManager().disablePlugin(helpTicket);
-				
-			}
-			
-		}
-		
-	}
-	
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

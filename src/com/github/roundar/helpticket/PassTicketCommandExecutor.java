@@ -8,10 +8,8 @@ public class PassTicketCommandExecutor implements CommandExecutor {
 
 	HelpTicket helpTicket;
 	
-	public PassTicketCommandExecutor(HelpTicket helpTicket){
-		
-		this.helpTicket = helpTicket;
-		
+	public PassTicketCommandExecutor(HelpTicket helpTicket){		
+		this.helpTicket = helpTicket;		
 	}
 	
 	@Override
@@ -22,20 +20,15 @@ public class PassTicketCommandExecutor implements CommandExecutor {
 		
 		TicketManager ticketManager = helpTicket.ticketManager();
 		
-		if (ticketManager.countTickets() == 0){
-			
+		if (ticketManager.countTickets() == 0)			
 			sender.sendMessage("There are currently no open tickets.");
 		
-		} else if (ticketManager.countTickets() == 1) {
-			
+		else if (ticketManager.countTickets() == 1)			
 			sender.sendMessage("There is only one open ticket.");
 		
-		} else {
-			
-			ticketManager.passTicket();
-			
-			sender.sendMessage("Ticket sent to the back of the queue.");
-			
+		else {
+			ticketManager.passTicket();			
+			sender.sendMessage("Ticket has been moved back.");			
 		}
 		
 		return true;

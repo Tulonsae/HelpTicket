@@ -8,10 +8,8 @@ public class TicketCountCommandExecutor implements CommandExecutor {
 
 	HelpTicket helpTicket;
 	
-	public TicketCountCommandExecutor(HelpTicket helpTicket){
-		
-		this.helpTicket = helpTicket;
-		
+	public TicketCountCommandExecutor(HelpTicket helpTicket){		
+		this.helpTicket = helpTicket;		
 	}
 	
 	@Override

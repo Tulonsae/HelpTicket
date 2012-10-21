@@ -1,20 +1,17 @@
 package com.github.roundar.helpticket;
 
-import java.text.ParseException;
 import java.util.Date;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 public class Ticket {
 	
-	private final Short id;
-	private final String date;
-	private final String opener;
-	private final String message;
+	private int id;
+	private String date;
+	private String opener;
+	private String message;
 	
 	private String closer;
 	
-	public Ticket(Short id, String opener, String message){		
+	public Ticket(int id, String opener, String message){		
 		this.id = id;
 		this.date = new Date().toString();
 		this.opener = opener;
@@ -22,37 +19,35 @@ public class Ticket {
 		this.closer = null;
 	}
 	
-	public Ticket(String ticketString) throws ParseException {
+	public Ticket(String ticketString) {
 		
-		Scanner scanner = new Scanner(ticketString);
-		scanner.useDelimiter(",");
+		String[] ticket = ticketString.split(",");
 		
-		try {
-			id = scanner.nextShort();		
-			date = scanner.next();		
-			opener = scanner.next();			
-			message = scanner.next();			
-		} catch (NumberFormatException NFE ) {
-			scanner.close();
-			throw new ParseException("Index invalid or missing.",0);
-		} catch (NoSuchElementException NSEE) {
-			scanner.close();
-			throw new ParseException("Ticket string corrupted, missing the required date, opener, or message.",0);
+		try {			
+			id = Short.parseShort(ticket[0]);			
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+			id = 666666666;
 		}
 		
-
 		try {
-			closer = scanner.next();
-		} catch(NoSuchElementException NSEE) {}
-		
-		scanner.close();
-		
-		
-		
+			date = ticket[1];
+			opener = ticket[2];
+			message = ticket[3];
+			
+			if(ticket.length > 4)
+				closer = ticket[4];		
+		} catch (IndexOutOfBoundsException e) {
+			e.printStackTrace();
+			date = date==null? "": date;
+			opener = opener==null? "":opener;
+			message = message==null? "":message;
+			closer = ticketString; //preserve potentially corrupted string
+		}
 	}
 	
 	
-	public Short id(){ return id; }
+	public int id(){ return id; }
 	
 	public String date() { return date; }
 	
@@ -67,11 +62,7 @@ public class Ticket {
 	
 	public String toString(){
 		
-		String temp = (closer==null? "" : closer);
-		
-		return id.toString() + "," + date + "," + opener + "," + message + "," + temp;
+		return id + "," + date + "," + opener + "," + message + "," + (closer==null? "" : closer);
 	}
-
-	
 	
 }

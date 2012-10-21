@@ -1,5 +1,5 @@
 name: HelpTicket
-version: 0.3
+version: 1.2
 author: roundar
 
 main: com.github.roundar.helpticket.HelpTicket

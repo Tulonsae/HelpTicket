@@ -9,10 +9,8 @@ public class HelpTicketBlockCommandExecutor implements CommandExecutor {
 
 	HelpTicket helpTicket;
 	
-	public HelpTicketBlockCommandExecutor(HelpTicket helpTicket){
-		
-		this.helpTicket = helpTicket;
-		
+	public HelpTicketBlockCommandExecutor(HelpTicket helpTicket){		
+		this.helpTicket = helpTicket;		
 	}
 	
 	@Override
@@ -23,16 +21,12 @@ public class HelpTicketBlockCommandExecutor implements CommandExecutor {
 		
 		Player target = sender.getServer().getPlayerExact(args[0]);
 		
-		if(target==null) {
-			
+		if(target==null)			
 			sender.sendMessage("Player does not exist.");
-			
-		} else {
-			
-			target.addAttachment(helpTicket).setPermission("HelpTicket.send", false);
-			
-			sender.sendMessage(args[0] + " can no longer open new tickets." );
-			
+		
+		else {			
+			target.addAttachment(helpTicket).setPermission("HelpTicket.send", false);			
+			sender.sendMessage(args[0] + " can no longer open new tickets." );			
 		}
 		
 		return true;

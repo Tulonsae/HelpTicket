@@ -8,10 +8,8 @@ public class CloseTicketCommandExecutor implements CommandExecutor {
 
 	HelpTicket helpTicket;
 	
-	public CloseTicketCommandExecutor(HelpTicket helpTicket){
-		
-		this.helpTicket = helpTicket;
-		
+	public CloseTicketCommandExecutor(HelpTicket helpTicket){		
+		this.helpTicket = helpTicket;		
 	}
 	
 	@Override
@@ -20,12 +18,10 @@ public class CloseTicketCommandExecutor implements CommandExecutor {
 		if(args.length!=0)
 			return false;
 		
-		if(helpTicket.ticketManager().closeTicket(sender.getName()))
-			
+		if(helpTicket.ticketManager().closeTicket(sender.getName()))			
 			sender.sendMessage("Ticket Closed.");
 		
-		else
-			
+		else			
 			sender.sendMessage("There are currently no tickets to close.");
 		
 		return true;

@@ -21,19 +21,14 @@ public class HelpTicket extends JavaPlugin {
 		getCommand("ticketcount").setExecutor(new TicketCountCommandExecutor(this));
 		getCommand("HelpTicketBlock").setExecutor(new HelpTicketBlockCommandExecutor(this));
 		getCommand("HelpTicketUnblock").setExecutor(new HelpTicketUnblockCommandExecutor(this));
-		
 	}
 
 	public TicketManager ticketManager(){
-		
-		return ticketManager; 
-		
+		return ticketManager; 		
 	}
 	
 	public FileManager fileManager(){ 
-		
-		return fileManager; 
-		
+		return fileManager; 		
 	}
 	
 }

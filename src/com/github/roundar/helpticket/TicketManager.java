@@ -9,52 +9,36 @@ public class TicketManager {
 	
 	private LinkedList<Ticket> tickets;
 	
-	private Short currentId;
+	private int currentId;
 	
 	
 	public TicketManager(HelpTicket helpTicket) {
 		
 		this.helpTicket = helpTicket;
 		
-		tickets = helpTicket.fileManager().getOpenTickets();
+		tickets = helpTicket.fileManager().loadOpenTickets();
 		
-		if(tickets.isEmpty())
-			currentId = 0;
-		else
-			currentId = (short) (tickets.peekLast().id() + 1);
-		
+		currentId = helpTicket.fileManager().getLastUsedId() + 1;
 	}
 	
-	public int countTickets(){
-		
-		return tickets.size();
+	public int countTickets(){ 
+		return tickets.size(); 
 	}
-
+	
+	public Ticket readTicket(){ 
+		return tickets.isEmpty() ? null : tickets.peek();
+	}
 	
 	public void passTicket(){
 		if(!tickets.isEmpty())
-			tickets.add( tickets.remove() );
+			tickets.add( 1, tickets.remove() );
 	}
-	
-	
-	public Ticket readTicket(){
-		
-		if(tickets.isEmpty())
-			return null;
-		
-		return tickets.peek();
-	}
-	
 	
 	public void openTicket(String sender, String message){
 		
-		Ticket ticket = new Ticket( currentId , sender, message);
+		tickets.add( new Ticket( currentId++, sender, message) );
 		
-		tickets.add(ticket);
-		
-		helpTicket.fileManager().appendOpenTicket(ticket);
-		
-		currentId++;		
+		helpTicket.fileManager().saveTicket( tickets.peekLast(), true );
 	}
 	
 	
@@ -63,12 +47,11 @@ public class TicketManager {
 		if(tickets.isEmpty())
 			return false;
 		
-		Ticket ticket = tickets.remove();
-		ticket.setCloser(closer);
+		tickets.peek().setCloser(closer);
 
-		helpTicket.fileManager().archiveTicket(ticket);
+		helpTicket.fileManager().saveTicket( tickets.remove(), false );
 		
-		return true;		
+		return true;
 	}
 	
 }

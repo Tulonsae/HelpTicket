@@ -9,9 +9,7 @@ public class ReadTicketCommandExecutor implements CommandExecutor {
 	HelpTicket helpTicket;
 	
 	public ReadTicketCommandExecutor(HelpTicket helpTicket){
-		
-		this.helpTicket = helpTicket;
-		
+		this.helpTicket = helpTicket;		
 	}
 	
 	@Override
@@ -22,13 +20,11 @@ public class ReadTicketCommandExecutor implements CommandExecutor {
 		
 		Ticket ticket = helpTicket.ticketManager().readTicket();
 		
-		if(ticket==null)
-			
+		if(ticket==null)			
 			sender.sendMessage("There are currently no open tickets.");
 		
-		else
-			
-			sender.sendMessage(	"\nOpener:  " + ticket.opener() + "\n\n" + ticket.message() + "\n\n " );
+		else			
+			sender.sendMessage(	"\nOpener:  " + ticket.opener() + "\n\n" + ticket.message() + "\n " );
 		
 		return true;
 		
